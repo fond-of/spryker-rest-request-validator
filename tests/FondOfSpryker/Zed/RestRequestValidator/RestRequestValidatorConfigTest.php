@@ -4,6 +4,7 @@ namespace FondOfSpryker\Zed\RestRequestValidator;
 
 use Codeception\Test\Unit;
 use org\bovigo\vfs\vfsStream;
+use Spryker\Shared\Config\Config;
 
 class RestRequestValidatorConfigTest extends Unit
 {
@@ -34,6 +35,12 @@ class RestRequestValidatorConfigTest extends Unit
      */
     public function testGetValidationSchemaPathPatternWithEmptyThirdPartyPathPatterns(): void
     {
+        $fileUrl = vfsStream::url('root/config/Shared/config_default.php');
+        $newFileContent = file_get_contents(codecept_data_dir('empty_config_default.php'));
+        file_put_contents($fileUrl, $newFileContent);
+
+        Config::getInstance()->init();
+
         $validationSchemaPathPattern = $this->restRequestValidatorConfig->getValidationSchemaPathPattern();
 
         $this->assertCount(3, $validationSchemaPathPattern);
@@ -47,6 +54,12 @@ class RestRequestValidatorConfigTest extends Unit
      */
     public function testGetValidationSchemaPathPattern(): void
     {
+        $fileUrl = vfsStream::url('root/config/Shared/config_default.php');
+        $newFileContent = file_get_contents(codecept_data_dir('config_default.php'));
+        file_put_contents($fileUrl, $newFileContent);
+
+        Config::getInstance()->init();
+
         $validationSchemaPathPattern = $this->restRequestValidatorConfig->getValidationSchemaPathPattern();
 
         $this->assertCount(4, $validationSchemaPathPattern);

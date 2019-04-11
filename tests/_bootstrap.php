@@ -27,3 +27,13 @@ if (!defined('APPLICATION_ROOT_DIR')) {
     $x = vfsStream::setup('root');
     define('APPLICATION_ROOT_DIR', $x->url());
 }
+
+if (!defined('APPLICATION_SOURCE_DIR')) {
+    $rootDir = rtrim(APPLICATION_ROOT_DIR, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+    define('APPLICATION_SOURCE_DIR', $rootDir . 'src' . DIRECTORY_SEPARATOR);
+}
+
+if (!defined('APPLICATION_VENDOR_DIR')) {
+    $rootDir = rtrim(APPLICATION_ROOT_DIR, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+    define('APPLICATION_VENDOR_DIR', $rootDir . 'vendor' . DIRECTORY_SEPARATOR);
+}
