@@ -3,13 +3,12 @@
 namespace FondOfSpryker\Zed\RestRequestValidator;
 
 use Codeception\Test\Unit;
-use org\bovigo\vfs\vfsStream;
-use Spryker\Shared\Config\Config;
+use FondOfSpryker\Shared\RestRequestValidator\RestRequestValidatorConstants;
 
 class RestRequestValidatorConfigTest extends Unit
 {
     /**
-     * @var \FondOfSpryker\Zed\RestRequestValidator\RestRequestValidatorConfig
+     * @var \FondOfSpryker\Zed\RestRequestValidator\RestRequestValidatorConfig|\PHPUnit\Framework\MockObject\MockObject
      */
     protected $restRequestValidatorConfig;
 
@@ -18,16 +17,9 @@ class RestRequestValidatorConfigTest extends Unit
      */
     protected function _before(): void
     {
-        $this->vfsStreamDirectory = vfsStream::setup('root', null, [
-            'config' => [
-                'Shared' => [
-                    'stores.php' => file_get_contents(codecept_data_dir('stores.php')),
-                    'config_default.php' => file_get_contents(codecept_data_dir('empty_config_default.php')),
-                ],
-            ],
-        ]);
-
-        $this->restRequestValidatorConfig = new RestRequestValidatorConfig();
+        $this->restRequestValidatorConfig = $this->getMockBuilder(RestRequestValidatorConfig::class)
+            ->setMethods(['get'])
+            ->getMock();
     }
 
     /**
@@ -35,11 +27,10 @@ class RestRequestValidatorConfigTest extends Unit
      */
     public function testGetValidationSchemaPathPatternWithEmptyThirdPartyPathPatterns(): void
     {
-        $fileUrl = vfsStream::url('root/config/Shared/config_default.php');
-        $newFileContent = file_get_contents(codecept_data_dir('empty_config_default.php'));
-        file_put_contents($fileUrl, $newFileContent);
-
-        Config::getInstance()->init();
+        $this->restRequestValidatorConfig->expects($this->atLeastOnce())
+            ->method('get')
+            ->with(RestRequestValidatorConstants::THIRD_PARTY_VALIDATION_PATH_PATTERNS, [])
+            ->willReturn([]);
 
         $validationSchemaPathPattern = $this->restRequestValidatorConfig->getValidationSchemaPathPattern();
 
@@ -54,11 +45,12 @@ class RestRequestValidatorConfigTest extends Unit
      */
     public function testGetValidationSchemaPathPattern(): void
     {
-        $fileUrl = vfsStream::url('root/config/Shared/config_default.php');
-        $newFileContent = file_get_contents(codecept_data_dir('config_default.php'));
-        file_put_contents($fileUrl, $newFileContent);
-
-        Config::getInstance()->init();
+        $this->restRequestValidatorConfig->expects($this->atLeastOnce())
+            ->method('get')
+            ->with(RestRequestValidatorConstants::THIRD_PARTY_VALIDATION_PATH_PATTERNS, [])
+            ->willReturn([
+                'fond-of-spryker/*/*/*/Glue/*/Validation',
+            ]);
 
         $validationSchemaPathPattern = $this->restRequestValidatorConfig->getValidationSchemaPathPattern();
 
